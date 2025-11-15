@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<timetable>
+
+  <days options="canadd,export:silent" columns="day,name,short">
+    <day name="الأحد" short="احد" day="0"/>
+    <day name="الإثنين" short="اثنين" day="1"/>
+    <day name="الثلاثاء" short="ثلاثاء" day="2"/>
+    <day name="الأربعاء" short="اربعاء" day="3"/>
+    <day name="الخميس" short="خميس" day="4"/>
+  </days>
+
+  <periods options="canadd,export:silent" columns="period,starttime,endtime">
+    <period period="1" starttime="8:00" endtime="8:45"/>
+    <period period="2" starttime="9:00" endtime="9:45"/>
+    <period period="3" starttime="10:00" endtime="10:45"/>
+    <period period="4" starttime="11:00" endtime="11:45"/>
+    <period period="5" starttime="12:00" endtime="12:45"/>
+    <period period="6" starttime="13:00" endtime="13:45"/>
+  </periods>
+
+  <teachers options="canadd,export:silent" columns="id,name,short,gender,color">
+    <teacher id="1" name="محمد البوصافي" short="محمد البوصافي" gender="M" color="#FF0000"/>
+    <teacher id="2" name="عمار الهاشمي" short="عمار الهاشمي" gender="M" color="#00FF00"/>
+    <teacher id="3" name="أحمد السالمي" short="أحمد السالمي" gender="M" color="#0000FF"/>
+    <teacher id="4" name="خالد الفارسي" short="خالد الفارسي" gender="M" color="#FFFF00"/>
+    <teacher id="5" name="سالم المعمري" short="سالم المعمري" gender="M" color="#FF00FF"/>
+  </teachers>
+
+  <classes options="canadd,export:silent" columns="id,name,short,classroomids,teacherid,grade">
+    <class id="1" name="التاسع أساسي/1" short="9/1" classroomids="1" grade="9"/>
+    <class id="2" name="التاسع أساسي/2" short="9/2" classroomids="2" grade="9"/>
+    <class id="3" name="العاشر أساسي/1" short="10/1" classroomids="3" grade="10"/>
+    <class id="4" name="العاشر أساسي/2" short="10/2" classroomids="4" grade="10"/>
+    <class id="5" name="الحادي عشر/1" short="11/1" classroomids="5" grade="11"/>
+  </classes>
+
+  <subjects options="canadd,export:silent" columns="id,name,short">
+    <subject id="1" name="الرياضيات" short="رياضيات"/>
+    <subject id="2" name="العلوم" short="علوم"/>
+    <subject id="3" name="اللغة العربية" short="عربي"/>
+    <subject id="4" name="اللغة الإنجليزية" short="إنجليزي"/>
+    <subject id="5" name="التربية الإسلامية" short="إسلامية"/>
+  </subjects>
+
+  <classrooms options="canadd,export:silent" columns="id,name,short">
+    <classroom id="1" name="تاسع 1" short="9/1"/>
+    <classroom id="2" name="تاسع 2" short="9/2"/>
+    <classroom id="3" name="عاشر 1" short="10/1"/>
+    <classroom id="4" name="عاشر 2" short="10/2"/>
+    <classroom id="5" name="حادي عشر 1" short="11/1"/>
+  </classrooms>
+
+  <TimeTableSchedules options="canadd,canremove,canupdate,silent" columns="DayID,Period,LengthID,SchoolRoomID,SubjectGradeID,ClassID,OptionalClassID,TeacherID">
+    <TimeTableSchedule DayID="0" Period="1" LengthID="0" SchoolRoomID="1" SubjectGradeID="1" ClassID="1" TeacherID="1"/>
+    <TimeTableSchedule DayID="0" Period="2" LengthID="0" SchoolRoomID="2" SubjectGradeID="2" ClassID="2" TeacherID="2"/>
+    <TimeTableSchedule DayID="0" Period="3" LengthID="0" SchoolRoomID="3" SubjectGradeID="3" ClassID="3" TeacherID="3"/>
+    <TimeTableSchedule DayID="1" Period="1" LengthID="0" SchoolRoomID="1" SubjectGradeID="4" ClassID="1" TeacherID="4"/>
+    <TimeTableSchedule DayID="1" Period="2" LengthID="0" SchoolRoomID="2" SubjectGradeID="5" ClassID="2" TeacherID="5"/>
+    <TimeTableSchedule DayID="1" Period="3" LengthID="0" SchoolRoomID="3" SubjectGradeID="1" ClassID="3" TeacherID="1"/>
+    <TimeTableSchedule DayID="2" Period="1" LengthID="0" SchoolRoomID="4" SubjectGradeID="2" ClassID="4" TeacherID="2"/>
+    <TimeTableSchedule DayID="2" Period="2" LengthID="0" SchoolRoomID="5" SubjectGradeID="3" ClassID="5" TeacherID="3"/>
+    <TimeTableSchedule DayID="3" Period="1" LengthID="0" SchoolRoomID="1" SubjectGradeID="5" ClassID="1" TeacherID="5"/>
+    <TimeTableSchedule DayID="3" Period="2" LengthID="0" SchoolRoomID="2" SubjectGradeID="1" ClassID="2" TeacherID="1"/>
+    <TimeTableSchedule DayID="4" Period="1" LengthID="0" SchoolRoomID="3" SubjectGradeID="4" ClassID="3" TeacherID="4"/>
+    <TimeTableSchedule DayID="4" Period="2" LengthID="0" SchoolRoomID="4" SubjectGradeID="2" ClassID="4" TeacherID="2"/>
+  </TimeTableSchedules>
+
+</timetable>

@@ -1,0 +1,8 @@
+{
+  "teachers": [
+    { "id": 1, "name": "John Doe", "subject": "Math" }
+  ],
+  "schedules": [
+    { "id": 1, "teacherId": 1, "day": "Monday", "time": "10:00 AM" }
+  ]
+}
