@@ -75,7 +75,11 @@ export function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
     // تأخير بسيط لإظهار الحركة
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    if (login(username, password)) {
+    // إزالة المسافات الزائدة من البداية والنهاية (مهم للهواتف المحمولة)
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+
+    if (login(trimmedUsername, trimmedPassword)) {
       toast.success("تم تسجيل الدخول بنجاح");
       onOpenChange(false);
       setUsername("");
@@ -181,6 +185,10 @@ export function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
                   placeholder="أدخل اسم المستخدم"
                   className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400"
                   onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+                  autoComplete="username"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck="false"
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -218,20 +226,47 @@ export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [role, setRole] = useState<string>("teacher");
+  const [role, setRole] = useState<string>("director");
+  const [schoolId, setSchoolId] = useState("");
+  const { addUser } = useAuth();
 
   const handleAddUser = () => {
-    if (!username || !password || !name) {
-      toast.error("يرجى ملء جميع الحقول");
+    // إزالة المسافات الزائدة من الحقول
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+    const trimmedName = name.trim();
+    const trimmedSchoolId = schoolId.trim();
+
+    if (!trimmedUsername || !trimmedPassword || !trimmedName) {
+      toast.error("يرجى ملء جميع الحقول المطلوبة");
       return;
     }
 
-    toast.success("تم إضافة المستخدم بنجاح");
-    onOpenChange(false);
-    setUsername("");
-    setPassword("");
-    setName("");
-    setRole("teacher");
+    // التحقق من معرف المدرسة لمدير المدرسة
+    if (role === "director" && !trimmedSchoolId) {
+      toast.error("يرجى إدخال معرّف المدرسة لمدير المدرسة");
+      return;
+    }
+
+    const success = addUser({
+      username: trimmedUsername,
+      password: trimmedPassword,
+      name: trimmedName,
+      role: role as any,
+      schoolId: role === "director" ? trimmedSchoolId : undefined,
+    });
+
+    if (success) {
+      toast.success("✅ تم إضافة المستخدم بنجاح وحفظه في النظام");
+      onOpenChange(false);
+      setUsername("");
+      setPassword("");
+      setName("");
+      setRole("director");
+      setSchoolId("");
+    } else {
+      toast.error("❌ اسم المستخدم موجود مسبقاً");
+    }
   };
 
   return (
@@ -279,12 +314,26 @@ export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="admin">مدير النظام</SelectItem>
-                <SelectItem value="director">مدير المدرسة</SelectItem>
-                <SelectItem value="teacher">معلم</SelectItem>
+                <SelectItem value="admin">👑 مدير النظام</SelectItem>
+                <SelectItem value="director">👤 مدير المدرسة</SelectItem>
+                <SelectItem value="teacher">👨‍🏫 معلم</SelectItem>
               </SelectContent>
             </Select>
           </div>
+          {role === "director" && (
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="school-id">معرّف المدرسة *</Label>
+              <Input
+                id="school-id"
+                value={schoolId}
+                onChange={(e) => setSchoolId(e.target.value)}
+                placeholder="مثال: school-alhbab"
+              />
+              <p className="text-xs text-muted-foreground">
+                يجب أن يتطابق مع معرّف المدرسة في ملف XML
+              </p>
+            </div>
+          )}
           <Button onClick={handleAddUser} className="w-full">
             إضافة المستخدم
           </Button>
