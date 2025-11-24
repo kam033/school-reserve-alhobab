@@ -117,6 +117,25 @@ export function AbsencePage() {
     return allTeachers.find((t) => t.id === teacherId)
   }
 
+  function getClassNameById(classId: string): string {
+    if (!approvedSchedules || approvedSchedules.length === 0) {
+      return classId
+    }
+
+    for (const schedule of approvedSchedules) {
+      if (schedule.classes && Array.isArray(schedule.classes)) {
+        const classObj = schedule.classes.find(c =>
+          c.id === classId || c.originalId === classId
+        )
+        if (classObj) {
+          return classObj.name
+        }
+      }
+    }
+
+    return classId
+  }
+
   // Get absent teacher's periods on selected day
   const absentTeacherPeriods = useMemo(() => {
     if (!selectedTeacherId || !selectedDay || !approvedSchedules || approvedSchedules.length === 0) {
@@ -632,6 +651,51 @@ export function AbsencePage() {
       day: 'numeric'
     })
 
+    // Helper function to get class names for an absence
+    const getClassNamesForAbsence = (absence: Absence): string => {
+      const teacher = getTeacherById(absence.teacherId)
+      const originalTeacherId = teacher?.originalId || absence.teacherId.split('-').pop() || ''
+      const classIDs = new Set<string>()
+
+      const dayNames = ['', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس']
+      const absenceDate = new Date(absence.date)
+      const dayIndex = absenceDate.getDay() // 0 = Sunday
+      const dayID = dayIndex.toString()
+
+      approvedSchedules.forEach((schedule) => {
+        if (schedule.schedules && Array.isArray(schedule.schedules)) {
+          schedule.schedules.forEach((sched) => {
+            if (
+              sched.teacherID === originalTeacherId &&
+              sched.dayID === dayID &&
+              absence.periods.includes(sched.period)
+            ) {
+              if (sched.classID) {
+                classIDs.add(sched.classID)
+              }
+            }
+          })
+        }
+      })
+
+      // Convert class IDs to class names
+      const classNames: string[] = []
+      classIDs.forEach(classID => {
+        approvedSchedules.forEach(schedule => {
+          if (schedule.classes && Array.isArray(schedule.classes)) {
+            const classObj = schedule.classes.find(c =>
+              c.id === classID || c.originalId === classID
+            )
+            if (classObj && !classNames.includes(classObj.name)) {
+              classNames.push(classObj.name)
+            }
+          }
+        })
+      })
+
+      return classNames.length > 0 ? classNames.join('، ') : 'غير محدد'
+    }
+
     let tableRows = ''
     todayAbsences.forEach((absence, index) => {
       const teacherName = getTeacherName(absence.teacherId)
@@ -639,11 +703,13 @@ export function AbsencePage() {
         ? getTeacherName(absence.substituteTeacherId)
         : 'لا يوجد'
       const periodsText = absence.periods.sort((a, b) => a - b).join('، ')
+      const classNames = getClassNamesForAbsence(absence)
 
       tableRows += `
         <tr>
           <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">${index + 1}</td>
           <td style="padding: 12px; border: 1px solid #ddd; text-align: right;">${teacherName}</td>
+          <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">${classNames}</td>
           <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">${periodsText}</td>
           <td style="padding: 12px; border: 1px solid #ddd; text-align: right;">${substituteName}</td>
         </tr>
@@ -780,9 +846,10 @@ export function AbsencePage() {
             <thead>
               <tr>
                 <th style="width: 60px;">م</th>
-                <th style="width: 30%;">المعلم الغائب</th>
-                <th style="width: 25%;">الحصص</th>
-                <th style="width: 30%;">المعلم البديل</th>
+                <th style="width: 25%;">المعلم الغائب</th>
+                <th style="width: 20%;">الصف</th>
+                <th style="width: 15%;">الحصص</th>
+                <th style="width: 25%;">المعلم البديل</th>
               </tr>
             </thead>
             <tbody>
@@ -1056,7 +1123,7 @@ export function AbsencePage() {
                                   <div className="text-sm text-muted-foreground space-y-1">
                                     <div className="flex items-center gap-2">
                                       <GraduationCap className="w-4 h-4" />
-                                      <span>الصف: {period?.className || ps.className}</span>
+                                      <span>الصف: {getClassNameById(period?.className || ps.className)}</span>
                                     </div>
                                     {availableSubs.length > 0 ? (
                                       <div className="flex items-center gap-2 text-emerald-600">
@@ -1395,7 +1462,7 @@ export function AbsencePage() {
                     </div>
                     <div>
                       <span className="text-muted-foreground">الصف: </span>
-                      <span className="font-semibold">{ps.className}</span>
+                      <span className="font-semibold">{getClassNameById(ps.className)}</span>
                     </div>
                   </div>
                 </div>
@@ -1660,7 +1727,7 @@ export function AbsencePage() {
                         </div>
                         <div>
                           <span className="text-muted-foreground">الصف: </span>
-                          <span className="font-semibold">{periodInfo.className}</span>
+                          <span className="font-semibold">{getClassNameById(periodInfo.className)}</span>
                         </div>
                       </>
                     )}
