@@ -716,7 +716,12 @@ export function AbsencePage() {
               absence.periods.includes(sched.period)
             ) {
               if (sched.classID) {
-                classIDs.add(sched.classID)
+                // Handle multiple class IDs (comma-separated for transitional classes)
+                if (sched.classID.includes(',')) {
+                  sched.classID.split(',').forEach(id => classIDs.add(id.trim()))
+                } else {
+                  classIDs.add(sched.classID)
+                }
               }
             }
           })
@@ -735,7 +740,12 @@ export function AbsencePage() {
 
               if (matchesTeacher && absence.periods.includes(sched.period)) {
                 if (sched.classID) {
-                  classIDs.add(sched.classID)
+                  // Handle multiple class IDs (comma-separated for transitional classes)
+                  if (sched.classID.includes(',')) {
+                    sched.classID.split(',').forEach(id => classIDs.add(id.trim()))
+                  } else {
+                    classIDs.add(sched.classID)
+                  }
                 }
               }
             })
