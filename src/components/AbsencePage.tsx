@@ -122,6 +122,29 @@ export function AbsencePage() {
       return classId
     }
 
+    // Handle multiple class IDs (for combined/transitional classes)
+    // e.g., "2334174,2334176,2334178,2334180"
+    if (classId.includes(',')) {
+      const classIds = classId.split(',').map(id => id.trim())
+      const classNames: string[] = []
+
+      classIds.forEach(id => {
+        for (const schedule of approvedSchedules) {
+          if (schedule.classes && Array.isArray(schedule.classes)) {
+            const classObj = schedule.classes.find(c =>
+              c.id === id || c.originalId === id
+            )
+            if (classObj && !classNames.includes(classObj.name)) {
+              classNames.push(classObj.name)
+            }
+          }
+        }
+      })
+
+      return classNames.length > 0 ? classNames.join('، ') : classId
+    }
+
+    // Single class ID
     for (const schedule of approvedSchedules) {
       if (schedule.classes && Array.isArray(schedule.classes)) {
         const classObj = schedule.classes.find(c =>
