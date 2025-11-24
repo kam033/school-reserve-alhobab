@@ -681,8 +681,14 @@ export function AbsencePage() {
       approvedSchedules.forEach((schedule) => {
         if (schedule.schedules && Array.isArray(schedule.schedules)) {
           schedule.schedules.forEach((sched) => {
+            // Try matching with both original teacher ID and full teacher ID
+            const matchesTeacher =
+              sched.teacherID === originalTeacherId ||
+              sched.teacherID === absence.teacherId ||
+              absence.teacherId.endsWith('-' + sched.teacherID)
+
             if (
-              sched.teacherID === originalTeacherId &&
+              matchesTeacher &&
               sched.dayID === dayID &&
               absence.periods.includes(sched.period)
             ) {
@@ -693,6 +699,26 @@ export function AbsencePage() {
           })
         }
       })
+
+      // If no classIDs found, try without day restriction (fallback)
+      if (classIDs.size === 0) {
+        approvedSchedules.forEach((schedule) => {
+          if (schedule.schedules && Array.isArray(schedule.schedules)) {
+            schedule.schedules.forEach((sched) => {
+              const matchesTeacher =
+                sched.teacherID === originalTeacherId ||
+                sched.teacherID === absence.teacherId ||
+                absence.teacherId.endsWith('-' + sched.teacherID)
+
+              if (matchesTeacher && absence.periods.includes(sched.period)) {
+                if (sched.classID) {
+                  classIDs.add(sched.classID)
+                }
+              }
+            })
+          }
+        })
+      }
 
       // Convert class IDs to class names
       const classNames: string[] = []
