@@ -1743,6 +1743,9 @@ export function AbsencePage() {
             const currentSubstitute = absence.substituteTeacherId
 
             // Get period information from schedule
+            const teacher = getTeacherById(absence.teacherId)
+            const originalTeacherId = teacher?.originalId || absence.teacherId.split('-').pop() || ''
+
             const periodInfo = approvedSchedules
               .flatMap(s => {
                 if (!s.schedules) return []
@@ -1750,21 +1753,25 @@ export function AbsencePage() {
                 return s.schedules.map(sched => {
                   const dayIndex = parseInt(sched.dayID || '0')
                   const dayName = dayNames[dayIndex] || ''
-                  const teacher = getTeacherById(sched.teacherID)
+                  const schedTeacher = getTeacherById(sched.teacherID)
                   const periodNum = sched.period || 0
                   return {
                     teacherId: sched.teacherID,
                     periodNumber: periodNum,
                     day: dayName,
-                    subject: teacher?.subject || '',
+                    subject: schedTeacher?.subject || '',
                     className: sched.classID || ''
                   }
                 })
               })
-              .find(p =>
-                p.teacherId === absence.teacherId &&
-                absence.periods.includes(p.periodNumber)
-              )
+              .find(p => {
+                const matchesTeacher =
+                  p.teacherId === originalTeacherId ||
+                  p.teacherId === absence.teacherId ||
+                  absence.teacherId.endsWith('-' + p.teacherId)
+
+                return matchesTeacher && absence.periods.includes(p.periodNumber)
+              })
 
             const availableSubs = getAvailableSubstitutesForPeriod(
               absence.periods[0],
