@@ -657,10 +657,21 @@ export function AbsencePage() {
       const originalTeacherId = teacher?.originalId || absence.teacherId.split('-').pop() || ''
       const classIDs = new Set<string>()
 
-      const dayNames = ['', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس']
+      // Convert date to day name, then to dayID (1=Sunday, 2=Monday, etc.)
+      const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
       const absenceDate = new Date(absence.date)
       const dayIndex = absenceDate.getDay() // 0 = Sunday
-      const dayID = dayIndex.toString()
+      const dayName = dayNames[dayIndex]
+
+      // Map day name to dayID used in schedule (1=Sunday, 2=Monday, etc.)
+      const dayNameToID: { [key: string]: string } = {
+        'الأحد': '1',
+        'الاثنين': '2',
+        'الثلاثاء': '3',
+        'الأربعاء': '4',
+        'الخميس': '5'
+      }
+      const dayID = dayNameToID[dayName] || ''
 
       approvedSchedules.forEach((schedule) => {
         if (schedule.schedules && Array.isArray(schedule.schedules)) {
