@@ -40,3 +40,5 @@ kam033
 ## 📄 الترخيص
 
 MIT License
+
+<!-- Last Updated: November 2025 -->
