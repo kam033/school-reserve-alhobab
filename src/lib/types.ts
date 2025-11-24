@@ -76,6 +76,7 @@ export interface Absence {
   id: string
   teacherId: string
   date: string
+  day?: string // Day name (e.g., "الأحد", "الاثنين")
   periods: number[]
   substituteTeacherId?: string
   schoolId: string

@@ -536,6 +536,7 @@ export function AbsencePage() {
         id: `absence-${Date.now()}-${ps.periodNumber}-${Math.random()}`,
         teacherId: teacherData.id,
         date: selectedDate,
+        day: selectedDay, // Save the day name for accurate PDF export
         periods: [ps.periodNumber],
         substituteTeacherId: ps.substituteId || undefined,
         schoolId: 'school-1',
@@ -657,11 +658,15 @@ export function AbsencePage() {
       const originalTeacherId = teacher?.originalId || absence.teacherId.split('-').pop() || ''
       const classIDs = new Set<string>()
 
-      // Convert date to day name, then to dayID (1=Sunday, 2=Monday, etc.)
-      const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
-      const absenceDate = new Date(absence.date)
-      const dayIndex = absenceDate.getDay() // 0 = Sunday
-      const dayName = dayNames[dayIndex]
+      // Use saved day name if available, otherwise calculate from date
+      let dayName = absence.day
+      if (!dayName) {
+        // Fallback for old data: calculate day from date
+        const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
+        const absenceDate = new Date(absence.date + 'T00:00:00') // Add time to avoid timezone issues
+        const dayIndex = absenceDate.getDay() // 0 = Sunday
+        dayName = dayNames[dayIndex]
+      }
 
       // Map day name to dayID used in schedule (1=Sunday, 2=Monday, etc.)
       const dayNameToID: { [key: string]: string } = {
